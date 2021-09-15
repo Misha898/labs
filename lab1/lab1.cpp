@@ -1,90 +1,13 @@
 //Var 21
 #include<iostream>
+#include"lab1.hpp"
 
-struct Item {
-    int value;
-    int column;
-    Item *next;
-    Item() {std::cout << "Item constructor\n";next = nullptr;};
-};
-// Can I use classes instead structures(Same memory expenses), (imho no differences)?
-class Table {
-public:
-    Item *next;
-    int row;
-    int insert (int column, int value);
-    Table() {std::cout << "constructor\n";next = nullptr;};
-    ~Table();
-};
-
-Table::~Table() {
-    Item *tmp = next, *tmp_prev;
-    std::cout << "destructor\n";
-    if (next == nullptr){
-        std::cout << "Empty row\n";
-        return;
-    }
-    while (tmp) {
-        tmp_prev = tmp;
-        tmp = tmp->next;
-        delete tmp_prev;
-        std::cout << "Item from " << row + 1 << "th row was freed\n";
-    }
-    return;
-} 
-
-void row_init(Table *table, int n) { // How to do it more convinient?
-    for (int i = 0; i < n; ++i) {
-        table[i].row = i;
-    }
-    return;
-}
-
-int Table::insert(int column, int value) {
-    Item *tmp, *tmp_prev;
-    if (value == 0)
-        return 0;
-    if (next == nullptr) {
-        next = new Item;
-        next->value = value;
-        next->column = column;
-        return 0;
-    }
-    tmp = next;
-    while (tmp) {
-        if (tmp->column == column) {
-            std::cout << "Cell already busy\n";
-            return 1;
-        }
-        if (tmp->column < column) {
-            tmp_prev = tmp;
-            tmp = tmp->next;
-        }
-        else 
-            break;
-    }
-    if (tmp == next) {
-        next = new Item;
-        next->next = tmp;
-        next->column = column;
-        next->value = value;
-        return 0;
-    }
-    tmp = tmp_prev->next;
-    tmp_prev->next = new Item;
-    tmp_prev->next->next = tmp;
-    tmp_prev->next->column = column;
-    tmp_prev->next->value = value;
-    return 0;
-}
-
-void getNum (char &num) {
-    std::cin >> num;
-}
-
-//Templates????
-void getNum (int &num) {
-    std::cin >> num;
+template <class T>
+int getNum(T &a) {
+    std::cin >> a;
+    if (!std::cin.good())
+        return -1;
+return 1;
 }
 
 void input(Table *table, int rown, int coln) {
@@ -123,20 +46,76 @@ void print_m(Table *table, int rown, int coln) {
     return;
 }
 
+void swap_min(Table *table2, int n) {
+    Item *tmp_fir, *tmp_min, *tmp;
+    //int min;
+    int sw;
+    for (int i = 0; i < n; ++i) {
+        tmp_fir = tmp = tmp_min = table2[i].next;
+        if (!tmp_fir)
+            continue;
+        //min = tmp_min->value;
+        tmp = tmp->next;
+        while (tmp) {
+            if (tmp->value < tmp_min->value)
+                tmp_min = tmp;
+            tmp = tmp->next;
+        }
+        //std::cout << "tmp_min->value: " << tmp_min->value
+          //      << " " << tmp_min->column << std::endl;
+        sw = tmp_fir->value;
+        tmp_fir->value = tmp_min->value;
+        tmp_min->value = sw;
+    }
+    return;
+}
+
+void main_func(Table *table, Table *table2, int n) {
+    Item *tmp, *tmp2, *tmp_prev;
+    for (int i = 0; i < n; ++i) {
+        tmp = table[i].next;
+        table2[i].next = tmp_prev = tmp;
+        if (tmp) {
+            table2[i].next = tmp_prev = new Item;
+            tmp_prev->column = tmp->column;
+            tmp_prev->value = tmp->value;
+            tmp = tmp->next;
+        }
+        while (tmp) {
+            tmp2 = new Item;
+            tmp2->value = tmp->value;
+            tmp2->column = tmp->column;
+            tmp_prev->next = tmp2;
+            tmp_prev = tmp2;
+            tmp = tmp->next;
+        }
+    }
+    swap_min(table2, n);
+}
+
 int main() {
     int n, m;
-    Table *table; // "Table" or "class Table"(typedef)?
-    //Table mit;
+    Table *table, *table2; // "Table" or "class Table"(typedef)?
     std::cout << "Enter count of rows" << std::endl;
-    std::cin >> n;
+    getNum(n);
     std::cout << "Enter count of columns" << std::endl;
-    std::cin >> m;
+    getNum(m);
     std::cout << "Column: " << m << "\nRow: " << n << std::endl;  
     table = new Table [n];
     row_init(table, n);
-    //table = (Table *) malloc(sizeof(Table) * n);
     input(table, n, m);
     print_m(table, n, m);
+    //delete [] table;
+    // ***************************
+    table2 = new Table[n];
+    for (int i = 0; i < n; ++i) { // I don't like this::<<(
+        table2[i] = table[i];
+        std::cout << table[i].next << " debug \n\n"; // debug
+    }
+    main_func(table, table2, n);
+    print_m(table2, n, m);
+    // ***************************
     delete [] table;
+    delete [] table2;
     return 0; 
 }
