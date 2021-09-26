@@ -1,19 +1,7 @@
 #include"tractrix.h"
 
-static const std::string str = "1 - p3), 2 - p4), 3 - p5), 4 - p6)\n";
+static const std::string str = "1 - p3), 2 - p4), 3 - p5), 4 - p6), 5 - p7), 6 - p8 \n";
 static const std::string str1 = "Enter angle\n";
-
-template<typename T>
-void getNum(T &a, std::string msg = "Enter number\n") { 
-    cout << msg;
-    cin >> a;
-    while(!cin.good()) {
-        cin.clear();
-        cin.ignore(255,'\n');
-        cout << msg;
-        cin >> a;
-    }
-}
 
 void dialog(Tractrix &tr) {
     int cs;
@@ -37,6 +25,12 @@ void dialog(Tractrix &tr) {
         case 4:
             tr.square(); 
             break;
+        case 5:
+            tr.square_rot();
+            break;
+        case 6:
+            tr.volume();
+            break;
         default:
             return;
         } 
@@ -46,8 +40,6 @@ void dialog(Tractrix &tr) {
 int main() {
     Tractrix tr;
     double a;
-    //cout << tan(1) << endl;
-    ////cout << tan(0.5) << endl;
     getNum(a, "Enter constant\n");
     tr.set_a(a);
     dialog(tr);

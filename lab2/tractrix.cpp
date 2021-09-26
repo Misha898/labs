@@ -34,7 +34,14 @@ void Tractrix::radius(double arc) const {
 }
 
 void Tractrix::square() const {
-    cout << "Square is: " << 3.14 * a * a / 2 << endl;
+    cout << "Square is: " << M_PI * a * a / 2 << endl;
 }
 
+void Tractrix::square_rot() const {
+    cout << "Square of rotation: " << 4 * M_PI * a * a / 3 << endl;
+}
+
+void Tractrix::volume() const {
+    cout << "volumem is: " << M_PI *a*a*a * 5 / 3 << endl;
+}
 
